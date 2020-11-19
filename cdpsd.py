@@ -442,7 +442,15 @@ def solve(f, gradf, opG, adjG, g, X, y, r=1, **kwargs):
     # Main iteration
     # --------------
 
-    start_time = time.clock()
+    #Commented the line below as time.clock() is incosistent from Python3.3+
+    #Details here - https://stackoverflow.com/questions/58569361/attributeerror-module-time-has-no-attribute-clock-in-python-3-8
+    #start_time = time.clock()
+    #Commenting closed - Talha, 19 Nov
+    
+    #Added the line below - Talha, 19 Nov
+    start_time = time.process_time()
+    #Addition ends - Talha, 19 Nov
+    
     total_matmults = 0
     x0_cached = np.random.randn(n, r) # For initializing the greedy step
 
@@ -470,9 +478,24 @@ def solve(f, gradf, opG, adjG, g, X, y, r=1, **kwargs):
         meas['slack'] = np.vdot(gradf(y), (y + g))
 
         # Approximate minimum eigenvalue and associated normalized eigenvector
-        t0 = time.clock()
+        
+        #Commented the line below - Talha, 19 Nov
+        #t0 = time.clock()
+        #Commenting ends
+        
+        #Added the line below - Talha, 19 Nov
+        t0 = time.process_time()
+    	#Addition ends - Talha, 19 Nov
+    	
         q_min, lambda_min, matmultcnt = eigmin(adjG(gradf(y)), max_iters=max_eigmin_iters(kk), tol=eigmin_tol(kk))
-        t1 = time.clock()
+        
+        #Added the line below - Talha, 19 Nov
+        t1 = time.process_time()
+        #Addition Ends
+        
+        #Commented line below - Talha, 19 Nov
+	#t1 = time.clock()
+        #Commenting ends
         
         meas['dfeas'] = lambda_min
         meas['eigmin_matmult'] = matmultcnt
@@ -535,7 +558,9 @@ def solve(f, gradf, opG, adjG, g, X, y, r=1, **kwargs):
                                options={'maxiter':max_greedy_iters(kk),
                                         'gtol':greedy_tol(kk),
                                         'norm':2})
-            t1 = time.clock()
+                                        
+            #Commented the line below for the clock() - Talha, Nov 19th
+            t1 = time.process_time()#clock()
 
             meas['greedy_status'] = res.status
             meas['greedy_message'] = res.message
@@ -577,7 +602,8 @@ def solve(f, gradf, opG, adjG, g, X, y, r=1, **kwargs):
             meas['greedy_success'] = False
 
         # Update log
-        meas['time'] = time.clock() - start_time
+        #Commented the clock() part in the line below - Talha, 19 Nov
+        meas['time'] = time.process_time() - start_time#clock() - start_time
         if use_logging:
             flog.write(','.join(str(meas[key]) for key in meas) + '\n')
 
